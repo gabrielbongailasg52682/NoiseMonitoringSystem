@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Live Noise Monitoring Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: sans-serif; padding: 30px; background-color: #f0f0f0; }
+    h1 { color: #333; }
+    button { padding: 10px 20px; font-size: 16px; margin-top: 20px; }
+    .green { color: green; font-weight: bold; }
+    .amber { color: orange; font-weight: bold; }
+    .red { color: red; font-weight: bold; }
+    #data, #status { background: #fff; padding: 15px; margin-top: 20px; border-radius: 6px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    #alert, #error { color: red; font-weight: bold; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<h1>Live Noise Monitoring Dashboard</h1>
+
+<button onclick="requestReport()">Request Status Report</button>
+<div id="error"></div>
+
+<div id="data">
+  <p><strong>Device:</strong> <span id="device">--</span></p>
+  <p><strong>Timestamp:</strong> <span id="timestamp">--</span></p>
+  <p><strong>Noise Value:</strong> <span id="value">--</span></p>
+  <p id="alert"></p>
+</div>
+
+<h2>Device Status</h2>
+<div id="status">
+  <p><strong>Device Name:</strong> <span id="status-device">--</span></p>
+  <p><strong>Status Time:</strong> <span id="status-time">--</span></p>
+  <p><strong>Battery Voltage:</strong> <span id="battery-voltage">--</span> V</p>
+  <p><strong>Battery Current:</strong> <span id="battery-current">--</span> A</p>
+  <p><strong>Temperature:</strong> <span id="temperature">--</span> °C</p>
+  <p><strong>Location:</strong> <span id="location">--</span></p>
+</div>
+
+<script>
+function requestReport() {
+  fetch('trigger-report.php')
+    .then(res => res.text())
+    .then(msg => alert(msg))
+    .catch(() => alert("Failed to send request."));
+}
+
+function fetchData() {
+  fetch('data.php')
+    .then(response => {
+      if (!response.ok) throw new Error("Server error");
+      return response.json();
+    })
+    .then(data => {
+      const noise = parseFloat(data.value).toFixed(2);
+      const valueEl = document.getElementById('value');
+      valueEl.className = '';
+      valueEl.innerText = noise;
+
+      if (noise > 85) {
+        valueEl.classList.add('red');
+        valueEl.innerText += ' ❗';
+        document.getElementById('alert').innerText = 'Noise Level High';
+      } else if (noise > 65) {
+        valueEl.classList.add('amber');
+        document.getElementById('alert').innerText = '';
+      } else {
+        valueEl.classList.add('green');
+        document.getElementById('alert').innerText = '';
+      }
+
+      document.getElementById('device').innerText = data.table;
+      document.getElementById('timestamp').innerText = data.timestamp;
+      document.getElementById('status-device').innerText = data.table;
+      document.getElementById('status-time').innerText = data.status.timestamp;
+      document.getElementById('battery-voltage').innerText = parseFloat(data.status.battery_voltage).toFixed(2);
+      document.getElementById('battery-current').innerText = parseFloat(data.status.battery_current).toFixed(2);
+      document.getElementById('temperature').innerText = parseFloat(data.status.temperature).toFixed(2);
+      document.getElementById('location').innerText = `${parseFloat(data.status.latitude).toFixed(6)}, ${parseFloat(data.status.longitude).toFixed(6)}`;
+    })
+    .catch(() => {
+      document.getElementById('error').innerText = 'Connection or server error.';
+    });
+}
+
+setInterval(fetchData, 2000);
+window.onload = fetchData;
+</script>
+
+</body>
+</html>
+
