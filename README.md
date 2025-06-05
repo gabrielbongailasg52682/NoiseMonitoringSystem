@@ -1,3 +1,6 @@
+# Video for Presentation and Prototype --> https://youtu.be/JCAnYKSfNCM
+
+---
 # 🛰️ NS-3 LoRaWAN Noise Monitoring Simulation Dashboard
 
 [![NS-3 Compatible](https://img.shields.io/badge/Simulator-NS3--3.44-blue)](https://www.nsnam.org/)
@@ -8,8 +11,6 @@ This project simulates a **LoRaWAN-based noise monitoring node** using [NS-3](ht
 - Monitoring noise levels
 - Viewing device health (battery, temperature, location)
 - Manually triggering a status report from the browser
-
-Video --> https://youtu.be/JCAnYKSfNCM
 
 ---
 
