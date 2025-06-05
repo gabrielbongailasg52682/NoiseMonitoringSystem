@@ -9,6 +9,8 @@ This project simulates a **LoRaWAN-based noise monitoring node** using [NS-3](ht
 - Viewing device health (battery, temperature, location)
 - Manually triggering a status report from the browser
 
+Video --> https://youtu.be/JCAnYKSfNCM
+
 ---
 
 ## 📦 Requirements
